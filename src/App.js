@@ -9,7 +9,7 @@ const fomatTime = (second) => {
 
 export default function App() {
   const [time, setTime] = useState({
-    second: 0,
+    second: null,
     act: false, //false == pause and true == play
     stoped: false
   });
@@ -23,9 +23,13 @@ export default function App() {
       currentSecond = time.second;
     if (time.act && currentSecond > 0) {
       timeInterval = setInterval(() => {
-        currentSecond -= 1;
-        timeCurentRef.current = currentSecond;
-        timeRef.current.innerHTML = fomatTime(currentSecond);
+        if (currentSecond > 0) {
+          currentSecond -= 1;
+          timeCurentRef.current = currentSecond;
+          timeRef.current.innerHTML = fomatTime(currentSecond);
+        } else {
+          setTime({ second: 0, act: false, stoped: false });
+        }
       }, 1000);
     }
 
@@ -68,7 +72,7 @@ export default function App() {
     inputSecondRef.current.value = "";
     timeCurentRef.current = null;
     setTime({
-      second: 0,
+      second: null,
       act: false,
       stoped: false
     });
@@ -76,18 +80,22 @@ export default function App() {
 
   return (
     <div className="App">
-      Minute
-      <input ref={inputMinuteRef} />
-      Second
-      <input ref={inputSecondRef} />
-      {time.stoped && <button onClick={handleClearClick}>Clear</button>}
+      <input
+        className="input-minute"
+        placeholder="Input Minute"
+        ref={inputMinuteRef}
+      />
+      <input ref={inputSecondRef} placeholder="Input Second" />
       <h1 ref={timeRef}>{fomatTime(time.second)}</h1>
       {time.act ? (
         <button onClick={handlePlayPauseClick}>pause</button>
       ) : (
         <button onClick={handlePlayPauseClick}>play</button>
       )}
-      <button onClick={handleStopClick}>stop</button>
+      <button disabled={time.second === null} onClick={handleStopClick}>
+        stop
+      </button>
+      {time.stoped && <button onClick={handleClearClick}>Clear</button>}
     </div>
   );
 }
